@@ -1,0 +1,30 @@
+{
+  "name": "smartschoolmaintenance-node",
+  "version": "1.0.0",
+  "description": "A service to manage sensors in an IoT network",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "start": "npm run build && node ./dist/service.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Elias-Schaechl/SmartschoolMaintenance-Node.js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Elias-Schaechl/SmartschoolMaintenance-Node.js/issues"
+  },
+  "homepage": "https://github.com/Elias-Schaechl/SmartschoolMaintenance-Node.js#readme",
+  "devDependencies": {
+    "@types/ip": "^1.1.0",
+    "@types/node": "^10.12.23",
+    "typescript": "^3.3.3"
+  },
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "ip": "^1.1.5"
+  }
+}
