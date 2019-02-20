@@ -37,7 +37,6 @@ function SetUpHttpServer(){
 
 function SendUDP(message: string, address: string, port: number) {
     const client = dgram.createSocket("udp4")
-    //const buffer = Buffer.from(message)
     client.send(message, port, address, (err) => {
         client.close()
     })
