@@ -10,7 +10,7 @@ class ConfigHandler {
         this.path = "config.json";
         const rawdata = fs_1.default.readFileSync(this.path);
         this.config = JSON.parse(rawdata.toString());
-        this.config.local_ip = ip_1.default.address();
+        this.config.local_broadcast_ip = ip_1.default.subnet(ip_1.default.address(), "255.255.255.240").broadcastAddress;
     }
     static get Instance() {
         return this._instance || (this._instance = new this());

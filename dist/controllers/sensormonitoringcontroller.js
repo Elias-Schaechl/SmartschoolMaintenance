@@ -4,6 +4,7 @@ const dgram = require("dgram");
 const express = require("express");
 const simpleWsServer = require("simple-websocket/server");
 const config_1 = require("./../config/config");
+const log_1 = require("./../entities/log");
 const confgHandler = config_1.ConfigHandler.Instance;
 const uDPserver = dgram.createSocket("udp4");
 const httpServer = express();
@@ -14,20 +15,25 @@ const thingList = [];
 // const broadcastPort = confgHandler.config.udp.broadcast_port
 // const broadcastAddress = "127.0.0.255"
 const logId = "*LG";
-const broadcastAddress = "192.168.0.255";
 const broadcastPort = 4444;
 const uDPListenPort = 41234;
 const httpPort = 3000;
-const localIP = confgHandler.config.local_ip;
-console.log(localIP);
+//const broadcastAddress = "192.168.0.255"
+const broadcastAddress = "10.0.0.255";
+//const broadcastAddress = confgHandler.config.local_broadcast_ip
+console.log("Local broadcast address: " + broadcastAddress);
 function setup() {
     SetUpUDPServer();
     SetUpHttpServer();
     SetUpWsServer();
-    // setInterval(() => SendUDP(JSON.stringify(uDPListenPort), broadcastAddress, broadcastPort), 15000)
+    SetUpUdpInitCycle();
     console.log("SensorMonitoringControllerSetup ran");
 }
 exports.setup = setup;
+function SetUpUdpInitCycle() {
+    SendUDP(JSON.stringify(uDPListenPort), broadcastAddress, broadcastPort);
+    setInterval(() => SendUDP(JSON.stringify(uDPListenPort), broadcastAddress, broadcastPort), 10000);
+}
 function SetUpHttpServer() {
     httpServer.get("/", (req, res) => {
         res.send("SensorMonitoring welcome message");
@@ -82,11 +88,11 @@ function StartsWith(base, check) {
     return true;
 }
 function CheckThingInList(checkThing) {
-    thingList.forEach((thing) => {
+    for (const thing of thingList) {
         if (thing.thing === checkThing) {
             return true;
         }
-    });
+    }
     return false;
 }
 function SetUpUDPServer() {
@@ -98,11 +104,13 @@ function SetUpUDPServer() {
     uDPserver.on("message", (msg, rinfo) => {
         // console.log(`${msg} from ${rinfo.address}:${rinfo.port}`)
         if (StartsWith(msg.toString("utf8"), logId)) {
-            SendWsMessage(msg.toString("utf8"));
+            const log = new log_1.Log(msg.toString("utf8"), GetThingByIp(rinfo.address));
+            SendWsMessage(JSON.stringify(log));
         }
         else {
             try {
                 const thing = JSON.parse(msg.toString());
+                thing.ip = rinfo.address;
                 if (!CheckThingInList(thing.thing)) {
                     thingList.push(thing);
                 }
@@ -115,7 +123,15 @@ function SetUpUDPServer() {
     });
     uDPserver.on("listening", () => {
         const address = uDPserver.address();
-        console.log(`server listening ${JSON.stringify(address)}`);
+        console.log(`UdpServer listening ${JSON.stringify(address)}`);
     });
     uDPserver.bind(uDPListenPort);
+}
+function GetThingByIp(ip) {
+    for (const thing of thingList) {
+        if (thing.ip === ip) {
+            return thing.thing;
+        }
+    }
+    return "oo";
 }
