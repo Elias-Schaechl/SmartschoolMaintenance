@@ -25,12 +25,19 @@
   },
   "dependencies": {
     "@types/cors": "^2.8.4",
+    "@types/default-gateway": "^3.0.0",
     "@types/express": "^4.16.1",
+    "@types/request": "^2.48.1",
     "@types/simple-websocket": "^7.0.1",
     "cors": "^2.8.5",
+    "default-gateway": "^4.2.0",
     "express": "^4.16.4",
     "fs": "0.0.1-security",
     "ip": "^1.1.5",
-    "simple-websocket": "^7.2.0"
+    "network-config": "^2.0.0",
+    "os": "^0.1.1",
+    "request": "^2.88.0",
+    "simple-websocket": "^7.2.0",
+    "underscore": "^1.9.1"
   }
 }

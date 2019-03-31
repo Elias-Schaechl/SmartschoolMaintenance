@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cors = require("cors");
 const dgram = require("dgram");
 const express = require("express");
+const request = require("request");
 const simpleWsServer = require("simple-websocket/server");
 const config_1 = require("./../config/config");
 const log_1 = require("./../entities/log");
@@ -21,9 +22,17 @@ const logId = "*LG";
 const broadcastPort = 4444;
 const uDPListenPort = 41234;
 const httpPort = 3000;
-const broadcastAddress = "192.168.0.255";
-// const broadcastAddress = "10.0.0.255"
+const broadcastAddress = "10.0.0.255";
+// const broadcastAddress = "192.168.0.255"
+// const broadcastAddress = "192.168.43.255"
+// const broadcastAddress = "10.0.75.255"
+// const broadcastAddress = ip.subnet(ip.address(), "255.255.255.0").broadcastAddress
 // const broadcastAddress = confgHandler.config.local_broadcast_ip
+// console.log("test: " + ip.address())
+// console.log(ip.subnet(ip.address(), "255.255.255.0"))
+// console.log("test: " + ip.subnet(ip.address(), "255.255.255.0").broadcastAddress)
+// console.log("test: " + ip.address())
+// console.log(confgHandler.config.local_broadcast_ip)
 console.log("Local broadcast address: " + broadcastAddress);
 function setup() {
     console.log("SensorMonitoringControllerSetup ran");
@@ -39,6 +48,11 @@ function SetUpUdpInitCycle() {
 }
 function SetUpHttpServer() {
     httpServer.use(cors());
+    httpServer.use((req, res, next) => {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        next();
+    });
     httpServer.get("/", (req, res) => {
         res.send("SensorMonitoring welcome message");
     });
@@ -50,9 +64,36 @@ function SetUpHttpServer() {
         res.header("Access-Control-Allow-Origin", "*");
         res.send(thingListString);
     });
+    httpServer.get("/state", (req, res) => {
+        const ip = req.query.ip;
+        // console.log(ip)
+        console.log("http thing/state");
+        req.pipe(request("http://" + ip + "/state", (error, response, body) => {
+            console.log("error:", error);
+        })).pipe(res);
+    });
+    httpServer.get("/reset", (req, res) => {
+        const ip = req.query.ip;
+        // console.log(ip)
+        console.log("http thing/reset");
+        try {
+            request("http://" + ip + "/reset", (error, response, body) => {
+                console.log("error:", error);
+            });
+        }
+        catch (error) {
+            res.status(500);
+        }
+        res.send("done");
+    });
+    // httpServer.use((err, req, res, next) => {
+    //    console.error(err.stack);
+    //    res.status(500).send('Something broke!');
+    //  });
     httpServer.listen(httpPort, () => {
         console.log(`HttpServer listening at port ${httpPort}`);
     });
+    // httpServer
 }
 function SetUpWsServer() {
     console.log(`WSServer listening at port ${websocketPort}`);
@@ -144,4 +185,42 @@ function GetThingByIp(ip) {
         }
     }
     return "oo";
+}
+function GetLocalBroadcastAddress() {
+    // underscore https://www.npmjs.com/package/underscore
+    // os https://www.npmjs.com/package/os
+    const address = require("underscore")
+        .chain(require("os").networkInterfaces())
+        .values()
+        .flatten()
+        .find({ family: "IPv4", internal: true })
+        .value()
+        .address;
+    console.log("\n");
+    console.log(require("underscore")
+        .chain(require("os").networkInterfaces())
+        .values()
+        .flatten()
+        .find({}));
+    console.log("\n");
+    console.log(require("underscore")
+        .chain(require("os").networkInterfaces())
+        .values()
+        .flatten()
+        .find({ family: "IPv4", internal: false }));
+    console.log("\n");
+    console.log("test Ip: " + address);
+    return;
+    // default-gateway https://www.npmjs.com/package/default-gateway
+    const defaultGateway = require("default-gateway");
+    // console.log(defaultGateway.V4.sync())
+    try {
+        defaultGateway.V4().then((result) => {
+            console.log(result);
+        });
+    }
+    catch (error) {
+        console.log(error);
+    }
+    return;
 }
