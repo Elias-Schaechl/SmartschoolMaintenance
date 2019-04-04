@@ -1,7 +1,7 @@
 import cors = require("cors")
 import dgram = require("dgram")
 import express = require("express")
-// import ip = require("ip")
+//import ip = require("ip")
 import request = require("request")
 import Socket = require("simple-websocket")
 import simpleWsServer = require("simple-websocket/server")
@@ -26,9 +26,9 @@ const broadcastPort = 4444
 const uDPListenPort = 41234
 const httpPort = 3000
 
-const broadcastAddress = "10.0.0.255"
+// const broadcastAddress = "10.0.0.255"
 // const broadcastAddress = "192.168.0.255"
-// const broadcastAddress = "192.168.43.255"
+const broadcastAddress = "192.168.43.255"
 // const broadcastAddress = "10.0.75.255"
 // const broadcastAddress = ip.subnet(ip.address(), "255.255.255.0").broadcastAddress
 // const broadcastAddress = confgHandler.config.local_broadcast_ip
@@ -88,6 +88,19 @@ function SetUpHttpServer() {
         console.log("http thing/reset")
         try {
             request("http://" + ip + "/reset", (error, response, body) => {
+                console.log("error:", error)
+            })
+        } catch (error) {
+            res.status(500)
+        }
+        res.send("done")
+    })
+    httpServer.get("/factory", (req, res) => {
+        const ip = req.query.ip
+        // console.log(ip)
+        console.log("http thing/factoryreset")
+        try {
+            request("http://" + ip + "/factoryreset", (error, response, body) => {
                 console.log("error:", error)
             })
         } catch (error) {

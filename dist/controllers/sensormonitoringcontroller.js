@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cors = require("cors");
 const dgram = require("dgram");
 const express = require("express");
+//import ip = require("ip")
 const request = require("request");
 const simpleWsServer = require("simple-websocket/server");
 const config_1 = require("./../config/config");
@@ -22,9 +23,9 @@ const logId = "*LG";
 const broadcastPort = 4444;
 const uDPListenPort = 41234;
 const httpPort = 3000;
-const broadcastAddress = "10.0.0.255";
+// const broadcastAddress = "10.0.0.255"
 // const broadcastAddress = "192.168.0.255"
-// const broadcastAddress = "192.168.43.255"
+const broadcastAddress = "192.168.43.255";
 // const broadcastAddress = "10.0.75.255"
 // const broadcastAddress = ip.subnet(ip.address(), "255.255.255.0").broadcastAddress
 // const broadcastAddress = confgHandler.config.local_broadcast_ip
@@ -70,7 +71,8 @@ function SetUpHttpServer() {
         console.log("http thing/state");
         req.pipe(request("http://" + ip + "/state", (error, response, body) => {
             console.log("error:", error);
-        })).pipe(res);
+        }))
+            .pipe(res);
     });
     httpServer.get("/reset", (req, res) => {
         const ip = req.query.ip;
@@ -78,6 +80,20 @@ function SetUpHttpServer() {
         console.log("http thing/reset");
         try {
             request("http://" + ip + "/reset", (error, response, body) => {
+                console.log("error:", error);
+            });
+        }
+        catch (error) {
+            res.status(500);
+        }
+        res.send("done");
+    });
+    httpServer.get("/factory", (req, res) => {
+        const ip = req.query.ip;
+        // console.log(ip)
+        console.log("http thing/factoryreset");
+        try {
+            request("http://" + ip + "/factoryreset", (error, response, body) => {
                 console.log("error:", error);
             });
         }
