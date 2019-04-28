@@ -20,6 +20,5 @@ export class ConfigHandler {
     private constructor() {
         const rawdata = fs.readFileSync(this.path)
         this.config = JSON.parse(rawdata.toString())
-        this.config.local_broadcast_ip = ip.subnet(ip.address(), "255.255.255.240").broadcastAddress
     }
 }

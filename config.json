@@ -1,7 +1,15 @@
 {
     "title": "SmartSchoolMaintenance",
     "udp":{
-        "broadcast_address":"111",
-        "broadcast_port":""
+        "broadcast_address":"10.0.0.255",
+        "broadcast_port":"4444",
+        "port":"41234",
+        "log_id":"*LG"
+    },
+    "http":{
+        "port":"3000"
+    },
+    "ws":{
+        "port":"8080"
     }
 }

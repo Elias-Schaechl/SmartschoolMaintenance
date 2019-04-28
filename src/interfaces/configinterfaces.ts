@@ -1,8 +1,21 @@
 export interface ConfigJson {
-    title: string,
-    local_broadcast_ip: string,
-    udp: {
-        broadcast_address: string,
-        broadcast_port: number
-    }
+    title: string
+    udp: Udp
+    http: Http
+    ws: Ws
+}
+
+interface Udp {
+    broadcast_address: string
+    broadcast_port: string
+    port: string
+    log_id: string
+}
+
+interface Http {
+    port: string
+}
+
+interface Ws {
+    port: string
 }
