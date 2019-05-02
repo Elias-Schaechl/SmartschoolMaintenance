@@ -179,7 +179,7 @@ function SetUpUDPServer() {
         uDPserver.close()
       })
     uDPserver.on("message", (msg, rinfo) => {
-        console.log(`${msg} from ${rinfo.address}:${rinfo.port}`)
+        //console.log(`${msg} from ${rinfo.address}:${rinfo.port}`)
         const receiveTime = Date.now()
         if (StartsWith(msg.toString("utf8"), logId)) {
 
