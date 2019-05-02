@@ -5,3 +5,4 @@ COPY package.json .
 RUN npm install
 COPY . .
 CMD [ "node", "dist/service.js" ]
+EXPOSE 8080
